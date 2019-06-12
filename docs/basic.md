@@ -116,9 +116,13 @@ module.export = {
 
 - bundle server，提供文件在浏览器可以访问
 - bundle.js，构建输出的文件
-- HMR Server，将热更新文件输出到HMR Runtime
+- HMR Server，将热更新文件输出到 HMR Runtime
 - HMR Runtime，被注入到浏览器，更新文件变化
 
 构建阶段：1 - 2 - A - B
 
 热更新阶段：1 - 2 - 3 - 4
+
+进阶文章：
+[webpack 热更新流程](https://github.com/kaola-fed/blog/issues/238)
+[Webpack 热更新实现原理分析](https://zhuanlan.zhihu.com/p/30623057)
