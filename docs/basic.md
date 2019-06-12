@@ -37,15 +37,15 @@ module.exports = {
 
 ### 解析 ES6 和 JSX
 
-`babel-loader`，在`.babelrc`文件中配置`preset`和`plugin`。
+babel-loader，在.babelrc 文件中配置 preset 和 plugin。
 
 ### 解析 CSS/Less/Sass
 
-`css-loader`，将`.css`转换成 commonjs 对象，把每个`.css`文件转成模块，放在最终生成文件中引用。
-`style-loader`，在最终生成文件中把 css 样式通过动态生成`<style>`插入到`<head>`里。
-`less-loader`, `sass-loader`是预处理工具，将 less/sass 转换成 css。
+css-loader，将.css 转换成 commonjs 对象，把每个.css 文件转成模块，放在最终生成文件中引用。
+style-loader，在最终生成文件中把 css 样式通过动态生成`<style>`插入到`<head>`里。
+less-loader, sass-loader 是预处理工具，将 less/sass 转换成 css。
 
-在 webpack.config 里`module.rules`里的`use`是链式调用，即从右到左解析，所以需要先使用`css-loader`再调用`style-loader`将解析后结果放入标签中。
+在 webpack.config 里 module.rules 里的 use 是链式调用，即从右到左解析，所以需要先使用 css-loader 再调用 style-loader 将解析后结果放入标签中。
 
 ```javascript
 module: {
@@ -60,8 +60,8 @@ module: {
 
 ### 解析图片/字体
 
-`file-loader`，支持图片、字体。
-`url-loader`，支持图片、字体，并将较小资源自动 base64
+file-loader，支持图片、字体。
+url-loader，支持图片、字体，并将较小资源自动 base64
 
 ## webpack 监听文件
 
@@ -74,7 +74,7 @@ module: {
 
 ### 原理
 
-通过轮询判断文件的最后编辑时间是否发生变化。当文件发生变化时，会先缓存起来，再告诉监听者。
+通过轮询判断文件的最后编辑时间是否发生变化。当文件发生变化时，会先缓存起来，再告诉监听者。缓存放在磁盘中。
 
 ```javascript
 module.export = {
@@ -89,3 +89,34 @@ module.export = {
 
 性能方面：增加忽略文件，降低重新构建频率，降低检查频率
 注意：这种监听方式需要**手动**刷新浏览器
+
+## 热更新
+
+在 dev 模式下，使用 webpack-dev-server，不输出文件，缓存放在内存中。
+
+### 开启方式
+
+`webpack-dev-server --open`负责热更新，不支持初次构建输出 dist。
+
+```javascript
+module.export = {
+  mode: "development",
+  plugins: [new webpack.HotModuleReplacementPlugin()],
+  devServer: {
+    contentBase: "./dist", // 指定webpack打包输出目录
+    hot: true
+  }
+};
+```
+
+### 原理
+
+![原理图](http://ww4.sinaimg.cn/large/006tNc79ly1g3yf72gnnqj312w0g40tw.jpg)
+
+bundle server，提供文件在浏览器可以访问
+bundle.js，构建输出的文件
+HMR Server，将热更新文件输出到HMR Runtime
+HMR Runtime，被注入到浏览器，更新文件变化
+
+构建阶段：1 - 2 - A - B
+热更新阶段：1 - 2 - 3 - 4
