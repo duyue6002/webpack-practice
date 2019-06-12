@@ -61,4 +61,31 @@ module: {
 ### 解析图片/字体
 
 `file-loader`，支持图片、字体。
-`url-loader`，支持图片、字体，并将较小资源自动base64
+`url-loader`，支持图片、字体，并将较小资源自动 base64
+
+## webpack 监听文件
+
+源码有变化，webpack 自动重新构建。
+
+### 开启方式
+
+1. 带`--watch`参数
+2. 在 config 中配置`watch:true`
+
+### 原理
+
+通过轮询判断文件的最后编辑时间是否发生变化。当文件发生变化时，会先缓存起来，再告诉监听者。
+
+```javascript
+module.export = {
+  watch: true,
+  watchOptions: {
+    ignored: /node_modules/, // 提高性能
+    aggregateTimeout: 300, // 监听到变化后300ms再去执行动作，用于缓存，防止更新太快
+    poll: 1000 // 每秒询问1000次
+  }
+};
+```
+
+性能方面：增加忽略文件，降低重新构建频率，降低检查频率
+注意：这种监听方式需要**手动**刷新浏览器
