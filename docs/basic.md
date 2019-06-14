@@ -124,5 +124,59 @@ module.export = {
 热更新阶段：1 - 2 - 3 - 4
 
 进阶文章：
-[webpack 热更新流程](https://github.com/kaola-fed/blog/issues/238)
-[Webpack 热更新实现原理分析](https://zhuanlan.zhihu.com/p/30623057)
+
+- [webpack 热更新流程](https://github.com/kaola-fed/blog/issues/238)
+- [Webpack 热更新实现原理分析](https://zhuanlan.zhihu.com/p/30623057)
+
+## 文件指纹
+
+文件指纹就是打包输出文件名的后缀，一般是一段哈希值。
+
+作用：方便做版本管理，未修改的文件其文件指纹不变，浏览器可以从缓存中读取。
+
+### 类型
+
+- hash: hash of the module identifier, 可用于图片、字体、PDF 等
+- chunkhash 与 chunk 有关，不同的 entry 会生成不同的 chunkhash
+- contenthash 一般用于处理 css，内容不变则不会变。css 用 chunkhash 时，引用的 js 变化时，css 的 chunkhash 也会变，这是不必要的
+
+### 使用
+
+需要使用占位符：
+
+- [ext] 文件的类型名
+- [name]
+- [path] 相对路径
+- [folder]
+- 三种 hash，md5 生成，默认长度 20 个字符，可使用 [hash:X] 配置
+  - [contenthash]
+  - [hash]
+  - [chunkhash]
+- [emoji]
+
+```javascript
+// js
+output: {
+  filename: '[name]_[chunkhash:8].js'
+}
+// img / font
+use: [
+  {
+    loader: 'file-loader',
+    options: {
+      name: '[name]_[hash:8].[ext]'
+    }
+  }
+]
+// css
+module.rules: [{
+  test: /.less$/,
+  // 不能与'style-loader'一起使用，因为作用相反，一个提取，一个压缩
+  use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'] 
+}],
+plugins: [
+  new MiniCssExtractPlugin({
+    filename: '[name]_[contenthash:8].css'
+  })
+]
+```
