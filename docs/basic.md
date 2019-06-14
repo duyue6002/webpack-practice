@@ -172,11 +172,53 @@ use: [
 module.rules: [{
   test: /.less$/,
   // 不能与'style-loader'一起使用，因为作用相反，一个提取，一个压缩
-  use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'] 
+  use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader']
 }],
 plugins: [
   new MiniCssExtractPlugin({
     filename: '[name]_[contenthash:8].css'
   })
 ]
+```
+
+## 代码压缩
+
+### JS 压缩
+
+webpack 4 内置了 uglifyjs-webpack-plugin
+
+### CSS 压缩
+
+使用 optimize-css-assets-webpack-plugin 和 cssnano
+
+```javascript
+plugins: [
+  new OptimizeCssAssetsPlugin({
+    assetNameRegExp: /\.css$/g,
+    cssProcessor: require("cssnano")
+  })
+];
+```
+
+### html 压缩
+
+使用 html-webpack-plugin
+
+```javascript
+plugins: [
+  new HtmlWebpackPlugin({
+    template: path.join(__dirname, "src/index.html"),
+    filename: "index.html",
+    chunks: ["index"],
+    inject: true,
+    minify: {
+      html5: true,
+      collapseWhiteSpace: true,
+      preserveLineBreaks: false,
+      minifyCSS: true,
+      minifyJS: true,
+      removeComments: false
+    }
+  })
+];
 ```
